@@ -7,6 +7,7 @@ CREATE TABLE [dbo].[Accounts]
 	[Password] NVARCHAR(MAX) NOT NULL,
 	[Balance] DECIMAL(12,5) NOT NULL, 
 	[CreatedDate] DATETIME NULL,
+	[LastTransactionDate] DATETIME NULL,
 	CONSTRAINT [PK_dbo.Accounts] PRIMARY KEY CLUSTERED
 	(
 		[Id] ASC
@@ -16,3 +17,6 @@ GO
 
 ALTER TABLE [dbo].[Accounts] ADD  CONSTRAINT [DF_Accounts_CreatedDate]  DEFAULT (getutcdate()) FOR [CreatedDate]
 GO
+ALTER TABLE [dbo].[Accounts] ADD  CONSTRAINT [DF_Accounts_LastTransactionDate]  DEFAULT (getutcdate()) FOR [LastTransactionDate]
+GO
+

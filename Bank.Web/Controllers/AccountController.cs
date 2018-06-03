@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Bank.Domain;
-using Bank.Web.Models;
+﻿using Bank.Domain;
+using Bank.Web.Models.Account;
 using Bank.Web.ServiceClient;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Bank.Web.Controllers
 {
@@ -19,19 +16,27 @@ namespace Bank.Web.Controllers
         [HttpGet]
         public IActionResult Register()
         {
-            return View(new AccountViewModel());
+            return View(new AccountModel());
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Detail(int id)
+        {
+            var result = await _httpClient.GetAsync<Account>($"api/Account/{id}");
+            return View(result);
         }
 
         [HttpPost]
-        public IActionResult Resgister(AccountViewModel account)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveRegistration(AccountModel accountModel)
         {
-            _httpClient.PostAsync<int>("api/Account",
-                    new Account { AccountName = account.AccountName,
-                        AccountNumber = account.AccountNumber,
-                        Password = account.Password,
-                        Balance = account.Balance
+            var result = await _httpClient.PostAsync<int>("api/Account",
+                    new Account { AccountName = accountModel.AccountName,
+                        AccountNumber = accountModel.AccountNumber,
+                        Password = accountModel.Password,
+                        Balance = accountModel.Balance
                     });
-            return View("Index");
+            return RedirectToAction("Detail", new { id = result });
         }
     }
 }

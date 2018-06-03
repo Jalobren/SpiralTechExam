@@ -17,6 +17,11 @@ namespace Bank.AppLogic
             return _database.Query<Account>("SELECT * FROM Accounts WHERE Id = @Id", new { Id = id });
         }
 
+        public Account GetBy(string accountNumber, string password)
+        {
+            return _database.Query<Account>("SELECT * FROM Accounts WHERE AccountNumber = @AccountNumber AND Password = @Password", new { AccountNumber = accountNumber, Password = password });
+        }
+
         public IEnumerable<Account> Get()
         {
             return _database.QueryList<Account>("SELECT * FROM Accounts");
@@ -25,10 +30,10 @@ namespace Bank.AppLogic
         public int Create(Account account)
         {
             var query = @"INSERT INTO Accounts 
-                            (AccountNumber,AccountName,Password) 
+                            (AccountNumber,AccountName,Password, Balance) 
                         OUTPUT INSERTED.[Id]
                         values 
-                            (@AccountNumber,@AccountName,@Password)";
+                            (@AccountNumber,@AccountName,@Password, @Balance)";
             return _database.Query<int>(query, account);
         }
     }

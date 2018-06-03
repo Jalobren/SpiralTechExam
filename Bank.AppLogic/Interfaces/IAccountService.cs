@@ -8,6 +8,7 @@ namespace Bank.AppLogic.Interfaces
     public interface IAccountService
     {
         Account Get(int id);
+        Account GetBy(string accountNumber, string password);
         IEnumerable<Account> Get();
         int Create(Account account);
     }

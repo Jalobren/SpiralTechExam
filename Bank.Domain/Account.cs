@@ -9,5 +9,6 @@ namespace Bank.Domain
         public string AccountName { get; set; }
         public string Password { get; set; }
         public decimal Balance { get; set; }
+        public DateTime LastTransactionDate { get; set; }
     }
 }

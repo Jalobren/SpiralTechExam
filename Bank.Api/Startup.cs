@@ -27,6 +27,7 @@ namespace Bank.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IAccountService, AccountService>();
+            services.AddTransient<ITransactionService, TransactionService>();
             services.AddTransient<IDatabase, Database>();
             services.AddMvc();
             services.AddSwaggerGen(c =>
