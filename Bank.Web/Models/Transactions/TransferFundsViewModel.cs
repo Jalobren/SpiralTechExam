@@ -10,5 +10,6 @@ namespace Bank.Web.Models.Transactions
     {
         public string AccountNumber { get; set; }
         public decimal CurrentBalance { get; set; }
+        public string ErrorMessage { get; set; }
     }
 }

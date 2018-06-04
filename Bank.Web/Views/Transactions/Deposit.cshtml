@@ -6,8 +6,12 @@
 
 <h2>Deposit</h2>
 
-<h4>DepositViewModel</h4>
+<h4>Make a deposit</h4>
 <hr />
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <span class="alert-danger">@Model.ErrorMessage</span>
+}
 <div class="row">
     <div class="col-md-4">
         <form asp-action="DepositTransaction" method="post">
@@ -16,11 +20,11 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="AccountNumber" class="control-label"></label>
-                <input asp-for="AccountNumber" class="form-control" />
+                <input asp-for="AccountNumber" class="form-control" ReadOnly="true"/>
             </div>
             <div class="form-group">
                 <label asp-for="CurrentBalance" class="control-label"></label>
-                <input asp-for="CurrentBalance" class="form-control" />
+                <input asp-for="CurrentBalance" class="form-control" ReadOnly="true"/>
             </div>
             <div class="form-group">
                 <label asp-for="Amount" class="control-label"></label>

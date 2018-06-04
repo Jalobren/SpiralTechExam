@@ -17,47 +17,68 @@ namespace Bank.AppLogic
             _accountService = accountService;
         }
 
-        public bool Deposit(Deposit deposit, string transactionInfo = null)
+        public TransactionResponse Deposit(Deposit deposit, string transactionInfo = null)
         {
             var acct = _accountService.Get(deposit.AccountId);
-            var newBalance = acct.Balance + deposit.Amount;
+            var response = ValidateConcurrentRequest(deposit, acct.LastTransactionDate);
+            if (response.IsSuccess)
+            {
+                var newBalance = acct.Balance + deposit.Amount;
 
-            var query = @"UPDATE Accounts 
-                            SET Balance = @Balance
+                var query = @"UPDATE Accounts 
+                            SET Balance = @Balance,
+                                LastTransactionDate = GETUTCDATE()
                             WHERE Id = @AccountId";
 
-            ExecuteWithTransactionHistory(deposit, query, acct.AccountNumber, newBalance, transactionInfo);
-
-            return true;
+                ExecuteWithTransactionHistory(deposit, query, acct.AccountNumber, newBalance, transactionInfo);
+            }
+            
+            return response;
         }
 
-        public bool Withdraw(Withdrawal withdrawal, string transactionInfo = null)
+        public TransactionResponse Withdraw(Withdrawal withdrawal, string transactionInfo = null)
         {
             var acct = _accountService.Get(withdrawal.AccountId);
-            var newBalance = acct.Balance - withdrawal.Amount;
+            var response = ValidateConcurrentRequest(withdrawal, acct.LastTransactionDate);
 
-            var query = @"UPDATE Accounts 
-                            SET Balance = @Balance
+            if (response.IsSuccess)
+            {
+                var newBalance = acct.Balance - withdrawal.Amount;
+
+                var query = @"UPDATE Accounts 
+                            SET Balance = @Balance,
+                                LastTransactionDate = GETUTCDATE()
                             WHERE Id = @AccountId";
 
-            ExecuteWithTransactionHistory(withdrawal, query, acct.AccountNumber, newBalance, transactionInfo);
-
-            return true;
+                ExecuteWithTransactionHistory(withdrawal, query, acct.AccountNumber, newBalance, transactionInfo);
+            }
+            return response;
         }
 
-        public bool Transfer(TransferFunds transfer)
+        public TransactionResponse ValidateConcurrentRequest(ITransaction transaction, DateTime lastTransactionDate)
+        {
+            if (lastTransactionDate.Subtract(transaction.LastTransactionDate).TotalSeconds >= 1)
+            {
+                return new TransactionResponse { ErrorCode = ErrorCodes.ERR_CONCURRENT };
+            }
+            return new TransactionResponse { IsSuccess = true };
+        }
+
+        public TransactionResponse Transfer(TransferFunds transfer)
         {
             var transferToAcct = _accountService.GetBy(transfer.TransferToAccountNumber);
             var acct = _accountService.Get(transfer.AccountId);
-
+            var response = new TransactionResponse();
             if (transferToAcct != null)
             {
-                Withdraw(new Withdrawal { AccountId = transfer.AccountId, Amount = transfer.Amount, LastTransactionDate = transfer.LastTransactionDate, TransactionType = TransactionTypes.Transfer, }, $"Fund transfer to Account Name: {transferToAcct.AccountName} Account Number: {transfer.TransferToAccountNumber}");
-                Deposit(new Domain.Deposit { AccountId = transferToAcct.Id, Amount = transfer.Amount, LastTransactionDate = transfer.LastTransactionDate, TransactionType = TransactionTypes.Transfer }, $"Fund transfer from Account Name: {acct.AccountName}");
+                response = Withdraw(new Withdrawal { AccountId = transfer.AccountId, Amount = transfer.Amount, LastTransactionDate = transfer.LastTransactionDate, TransactionType = TransactionTypes.Transfer, }, $"Fund transfer to Account Name: {transferToAcct.AccountName} Account Number: {transfer.TransferToAccountNumber}");
+                if (response.IsSuccess)
+                {
+                    response = Deposit(new Domain.Deposit { AccountId = transferToAcct.Id, Amount = transfer.Amount, LastTransactionDate = transfer.LastTransactionDate, TransactionType = TransactionTypes.Transfer }, $"Fund transfer from Account Name: {acct.AccountName}");
+                }
             }
-            //DO Validations and return errors;
 
-            return true;
+            return response;
         }
 
         public IEnumerable<TransactionHistory> GetHistory(int accountId)

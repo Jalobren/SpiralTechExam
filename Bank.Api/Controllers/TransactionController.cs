@@ -21,21 +21,21 @@ namespace Bank.Api.Controllers
 
         [HttpPost]
         [Route("Deposit")]
-        public bool DepositTransaction([FromBody]Deposit deposit)
+        public TransactionResponse DepositTransaction([FromBody]Deposit deposit)
         {
             return _transactionService.Deposit(deposit);
         }
 
         [HttpPost]
         [Route("Withdraw")]
-        public bool WithdrawTransaction([FromBody]Withdrawal withdrawal)
+        public TransactionResponse WithdrawTransaction([FromBody]Withdrawal withdrawal)
         {
             return _transactionService.Withdraw(withdrawal);
         }
 
         [HttpPost]
         [Route("Transfer")]
-        public bool TransferFundsTransaction([FromBody]TransferFunds transferFunds)
+        public TransactionResponse TransferFundsTransaction([FromBody]TransferFunds transferFunds)
         {
             return _transactionService.Transfer(transferFunds);
         }

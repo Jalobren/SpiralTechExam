@@ -9,5 +9,6 @@ namespace Bank.Domain.Interfaces
         int AccountId { get; set; }
         Decimal Amount { get; set; }
         TransactionTypes TransactionType { get; set; }
+        DateTime LastTransactionDate { get; set; }
     }
 }

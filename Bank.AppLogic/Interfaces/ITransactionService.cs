@@ -7,9 +7,9 @@ namespace Bank.AppLogic.Interfaces
 {
     public interface ITransactionService
     {
-        bool Deposit(Deposit deposit, string transactionInfo = null);
-        bool Withdraw(Withdrawal withdrawal, string transactionInfo = null);
-        bool Transfer(TransferFunds transfer);
+        TransactionResponse Deposit(Deposit deposit, string transactionInfo = null);
+        TransactionResponse Withdraw(Withdrawal withdrawal, string transactionInfo = null);
+        TransactionResponse Transfer(TransferFunds transfer);
         IEnumerable<TransactionHistory> GetHistory(int accountId);
     }
 }
