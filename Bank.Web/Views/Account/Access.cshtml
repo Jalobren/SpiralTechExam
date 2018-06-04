@@ -9,6 +9,10 @@
 
 <h4>Enter password to access account</h4>
 <hr />
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <span class="alert-danger">@Model.ErrorMessage</span>
+}
 <div class="row">
     <div class="col-md-4">
         <form asp-action="AccessAccount">

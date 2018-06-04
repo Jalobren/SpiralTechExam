@@ -16,15 +16,15 @@
     <div class="col-md-4">
         <form asp-action="DepositTransaction" method="post">
             <input type="hidden" asp-for="AccountId" />
-            <input type="hidden" asp-for="LastTransactionDate"/>
+            <input type="hidden" asp-for="LastTransactionDate" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="AccountNumber" class="control-label"></label>
-                <input asp-for="AccountNumber" class="form-control" ReadOnly="true"/>
+                <input asp-for="AccountNumber" class="form-control" ReadOnly="true" />
             </div>
             <div class="form-group">
                 <label asp-for="CurrentBalance" class="control-label"></label>
-                <input asp-for="CurrentBalance" class="form-control" ReadOnly="true"/>
+                <input asp-for="CurrentBalance" class="form-control" ReadOnly="true" />
             </div>
             <div class="form-group">
                 <label asp-for="Amount" class="control-label"></label>
@@ -41,4 +41,8 @@
 <div>
     @Html.ActionLink("Back To My Account", "Detail", "Account", new { id = Model.AccountId })
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
 

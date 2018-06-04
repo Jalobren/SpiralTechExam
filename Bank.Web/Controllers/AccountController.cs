@@ -1,6 +1,7 @@
 ﻿using Bank.Domain;
 using Bank.Web.Models.Account;
 using Bank.Web.ServiceClient;
+using Bank.Web.Utils;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -39,16 +40,21 @@ namespace Bank.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Access(string accountNumber)
+        public IActionResult Access(string accountNumber, string err = null)
         {
             return View(new AccountAccessViewModel { AccountNumber = accountNumber });
         }
 
         [HttpPost]
-        public async Task<IActionResult> AccessAccount(AccountAccessViewModel loginModel)
+        public async Task<IActionResult> AccessAccount(AccountAccessViewModel accountModel)
         {
-            var acct = await _httpClient.PostAsync<Account>("api/account/access", new AccountAccess { AccountNumber = loginModel.AccountNumber, Password = loginModel.Password });
+            var acct = await _httpClient.PostAsync<Account>("api/account/access", new AccountAccess { AccountNumber = accountModel.AccountNumber, Password = accountModel.Password });
 
+            if (acct == null)
+            {
+                var errMessage = ErrorMessageResolver.GetErrorMessage(ErrorCodes.ERR_ACCOUNT_NOT_FOUND);
+                return RedirectToAction("Access", "Account", new AccountAccessViewModel { AccountNumber = accountModel.AccountNumber, ErrorMessage = errMessage });
+            } 
             return RedirectToAction("Detail", "Account", new { id = acct.Id });
         }
     }

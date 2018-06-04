@@ -43,14 +43,19 @@ namespace Bank.AppLogic
 
             if (response.IsSuccess)
             {
-                var newBalance = acct.Balance - withdrawal.Amount;
+                response = ValidateWithdrawalAmount(acct.Balance, withdrawal.Amount);
 
-                var query = @"UPDATE Accounts 
+                if (response.IsSuccess)
+                {
+                    var newBalance = acct.Balance - withdrawal.Amount;
+
+                    var query = @"UPDATE Accounts 
                             SET Balance = @Balance,
                                 LastTransactionDate = GETUTCDATE()
                             WHERE Id = @AccountId";
 
-                ExecuteWithTransactionHistory(withdrawal, query, acct.AccountNumber, newBalance, transactionInfo);
+                    ExecuteWithTransactionHistory(withdrawal, query, acct.AccountNumber, newBalance, transactionInfo);
+                }
             }
             return response;
         }
@@ -60,6 +65,15 @@ namespace Bank.AppLogic
             if (lastTransactionDate.Subtract(transaction.LastTransactionDate).TotalSeconds >= 1)
             {
                 return new TransactionResponse { ErrorCode = ErrorCodes.ERR_CONCURRENT };
+            }
+            return new TransactionResponse { IsSuccess = true };
+        }
+
+        public TransactionResponse ValidateWithdrawalAmount(decimal currentBalance, decimal amount)
+        {
+            if (currentBalance < amount)
+            {
+                return new TransactionResponse { ErrorCode = ErrorCodes.ERR_INSUFFICIENT_FUNDS };
             }
             return new TransactionResponse { IsSuccess = true };
         }
@@ -74,7 +88,8 @@ namespace Bank.AppLogic
                 response = Withdraw(new Withdrawal { AccountId = transfer.AccountId, Amount = transfer.Amount, LastTransactionDate = transfer.LastTransactionDate, TransactionType = TransactionTypes.Transfer, }, $"Fund transfer to Account Name: {transferToAcct.AccountName} Account Number: {transfer.TransferToAccountNumber}");
                 if (response.IsSuccess)
                 {
-                    response = Deposit(new Domain.Deposit { AccountId = transferToAcct.Id, Amount = transfer.Amount, LastTransactionDate = transfer.LastTransactionDate, TransactionType = TransactionTypes.Transfer }, $"Fund transfer from Account Name: {acct.AccountName}");
+                    var updateAcct = _accountService.GetBy(transfer.TransferToAccountNumber);
+                    response = Deposit(new Domain.Deposit { AccountId = transferToAcct.Id, Amount = transfer.Amount, LastTransactionDate = updateAcct.LastTransactionDate, TransactionType = TransactionTypes.Transfer }, $"Fund transfer from Account Name: {acct.AccountName}");
                 }
             }
 

@@ -43,5 +43,9 @@
     @Html.ActionLink("Back to list", "Index", "Home")
 </div>
 
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
 
 
