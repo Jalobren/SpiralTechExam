@@ -3,7 +3,7 @@
 Architecture:
 - Bank.Domain: Contains all the domain classes.
 - Bank.AppLogic: Is the Business logic layer of the application
-- Bank.Data: Is used to access data. This usses Dapper.
+- Bank.Data: Is used to access data. Uses Dapper to connect and query the database.
 - Bank.DbUp: .net core console application. Creates the database tables using DbUp.
 - Bank.Api: Is a .net core api application for exposing services.
 - Bank.Web: Is a .net core MVC application for the presentation.
