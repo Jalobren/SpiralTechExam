@@ -32,5 +32,19 @@ namespace Bank.Api.Controllers
         {
             return _transactionService.Withdraw(withdrawal);
         }
+
+        [HttpPost]
+        [Route("Transfer")]
+        public bool TransferFundsTransaction([FromBody]TransferFunds transferFunds)
+        {
+            return _transactionService.Transfer(transferFunds);
+        }
+
+        [HttpGet]
+        [Route("History/{id}")]
+        public IEnumerable<TransactionHistory> GetTransactionHistory(int id)
+        {
+            return _transactionService.GetHistory(id);
+        }
     }
 }

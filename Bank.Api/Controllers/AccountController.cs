@@ -34,6 +34,14 @@ namespace Bank.Api.Controllers
         }
 
         [HttpPost]
+        [Route("access")]
+        public Account AccessAccount([FromBody]AccountAccess accountAccessDomain)
+        {
+            var account = _accountService.GetBy(accountAccessDomain.AccountNumber, accountAccessDomain.Password);
+            return account;
+        }
+
+        [HttpPost]
         public int Create([FromBody]Account account)
         {
             return _accountService.Create(account);

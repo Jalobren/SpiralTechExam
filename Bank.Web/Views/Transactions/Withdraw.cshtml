@@ -25,18 +25,18 @@
                 <span asp-validation-for="CurrentBalance" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="WithdrawalAmount" class="control-label"></label>
-                <input asp-for="WithdrawalAmount" class="form-control" />
-                <span asp-validation-for="WithdrawalAmount" class="text-danger"></span>
+                <label asp-for="Amount" class="control-label"></label>
+                <input asp-for="Amount" class="form-control" />
+                <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-default" />
+                <input type="submit" value="Withdraw" class="btn btn-default" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    @Html.ActionLink("Back To My Account", "Detail", "Account", new { id = Model.AccountId })
 </div>
 

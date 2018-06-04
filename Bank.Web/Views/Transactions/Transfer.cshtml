@@ -1,26 +1,28 @@
-﻿@model Bank.Web.Models.Transactions.DepositViewModel
+﻿@model Bank.Web.Models.Transactions.TransferFundsViewModel
 
 @{
-    ViewData["Title"] = "Deposit";
+    ViewData["Title"] = "TransferFunds";
 }
 
-<h2>Deposit</h2>
+<h2>TransferFunds</h2>
 
-<h4>DepositViewModel</h4>
+<h4>TransferFundsViewModel</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="DepositTransaction" method="post">
+        <form asp-action="TransferTransaction" method="post">
             <input type="hidden" asp-for="AccountId" />
-            <input type="hidden" asp-for="LastTransactionDate"/>
+            <input type="hidden" asp-for="LastTransactionDate" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="AccountNumber" class="control-label"></label>
                 <input asp-for="AccountNumber" class="form-control" />
+                <span asp-validation-for="AccountNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="CurrentBalance" class="control-label"></label>
                 <input asp-for="CurrentBalance" class="form-control" />
+                <span asp-validation-for="CurrentBalance" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Amount" class="control-label"></label>
@@ -28,7 +30,12 @@
                 <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Deposit" class="btn btn-default" />
+                <label asp-for="TransferToAccountNumber" class="control-label"></label>
+                <input asp-for="TransferToAccountNumber" class="form-control" />
+                <span asp-validation-for="TransferToAccountNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Transfer" class="btn btn-default" />
             </div>
         </form>
     </div>

@@ -20,7 +20,7 @@ namespace Bank.Api.Controllers
         }
 
         [HttpPost]
-        public Account UserLogin([FromBody]Login loginDomain)
+        public Account UserLogin([FromBody]AccountAccess loginDomain)
         {
             var account = _accountService.GetBy(loginDomain.AccountNumber, loginDomain.Password);
             return account;

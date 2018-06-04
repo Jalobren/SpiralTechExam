@@ -1,0 +1,57 @@
+﻿@model IEnumerable<Bank.Domain.TransactionHistory>
+
+@{
+    ViewData["Title"] = "History";
+}
+
+<h2>History</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Transaction Date
+            </th>
+            <th>
+                Account Number
+            </th>
+            <th>
+                Transaction Type
+            </th>
+            <th>
+                Transaction Info
+            </th>
+            <th>
+                Transaction Amount
+            </th>
+            <th>
+                Current Balance
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.TransactionDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AccountNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TransactionType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TransactionInfo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TransactionAmount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CurrentBalance)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

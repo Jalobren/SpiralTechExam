@@ -1,6 +1,49 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<Bank.Domain.Account>
+
+@{
+    ViewData["Title"] = "Accounts";
 }
 
-<h2>Account Details</h2>
+<h2>Accounts</h2>
+
+<p>
+    @Html.ActionLink("Add Account", "Register", "Account")
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.AccountNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AccountName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Balance)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccountNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccountName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Balance)
+                </td>
+                <td>
+                    @Html.ActionLink("Access", "Access", "Account", new { accountNumber = item.AccountNumber })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
 

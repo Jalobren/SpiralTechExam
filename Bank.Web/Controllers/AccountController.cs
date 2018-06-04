@@ -27,7 +27,6 @@ namespace Bank.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SaveRegistration(AccountModel accountModel)
         {
             var result = await _httpClient.PostAsync<int>("api/Account",
@@ -37,6 +36,20 @@ namespace Bank.Web.Controllers
                         Balance = accountModel.Balance
                     });
             return RedirectToAction("Detail", new { id = result });
+        }
+
+        [HttpGet]
+        public IActionResult Access(string accountNumber)
+        {
+            return View(new AccountAccessViewModel { AccountNumber = accountNumber });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AccessAccount(AccountAccessViewModel loginModel)
+        {
+            var acct = await _httpClient.PostAsync<Account>("api/account/access", new AccountAccess { AccountNumber = loginModel.AccountNumber, Password = loginModel.Password });
+
+            return RedirectToAction("Detail", "Account", new { id = acct.Id });
         }
     }
 }

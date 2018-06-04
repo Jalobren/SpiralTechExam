@@ -5,14 +5,15 @@ using System.Text;
 
 namespace Bank.Domain
 {
-    public class Deposit : ITransaction
+    public class TransferFunds : ITransaction
     {
-        public Deposit()
+        public TransferFunds()
         {
-            TransactionType = TransactionTypes.Deposit;
+            TransactionType = TransactionTypes.Transfer;
         }
         public int AccountId { get; set; }
         public decimal Amount { get; set; }
+        public string TransferToAccountNumber { get; set; }
         public DateTime LastTransactionDate { get; set; }
         public TransactionTypes TransactionType { get; set; }
     }

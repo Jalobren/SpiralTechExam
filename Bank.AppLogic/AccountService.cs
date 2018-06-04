@@ -17,6 +17,11 @@ namespace Bank.AppLogic
             return _database.Query<Account>("SELECT * FROM Accounts WHERE Id = @Id", new { Id = id });
         }
 
+        public Account GetBy(string accountNumber)
+        {
+            return _database.Query<Account>("SELECT * FROM Accounts WHERE AccountNumber = @AccountNumber", new { AccountNumber = accountNumber });
+        }
+
         public Account GetBy(string accountNumber, string password)
         {
             return _database.Query<Account>("SELECT * FROM Accounts WHERE AccountNumber = @AccountNumber AND Password = @Password", new { AccountNumber = accountNumber, Password = password });

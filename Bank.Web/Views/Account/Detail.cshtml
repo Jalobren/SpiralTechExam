@@ -6,6 +6,12 @@
 
 <h2>AccountDetails</h2>
 
+<p>
+    @Html.ActionLink("Deposit", "Deposit", "Transactions", new { id = Model.Id }, new { @class="btn btn-default" }) 
+    @Html.ActionLink("Withdraw", "Withdraw", "Transactions", new { id = Model.Id }, new { @class = "btn btn-default" }) 
+    @Html.ActionLink("Transfer", "Transfer", "Transactions", new { id = Model.Id }, new { @class = "btn btn-default" }) 
+    @Html.ActionLink("History", "History", "Transactions", new { id = Model.Id }, new { @class = "btn btn-default" })
+</p>
 <div>
     <h4>AccountModel</h4>
     <hr />
@@ -31,8 +37,4 @@
         </dd>
     </dl>
 </div>
-<div>
-    @Html.ActionLink("Deposit", "Deposit", "Transactions", new { id = Model.Id }) | 
-    @Html.ActionLink("Withdraw", "Withdraw", "Transactions", new { id = Model.Id })
 
-</div>
