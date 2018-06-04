@@ -11,9 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bank.DbUp", "Bank.DbUp\Bank
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bank.Data", "Bank.Data\Bank.Data.csproj", "{139C2C82-12DB-4369-9C8B-92BD5F317A4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bank.Api", "Bank.Api\Bank.Api.csproj", "{3548D6AC-EE27-427F-B451-E47EA9590862}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bank.Api", "Bank.Api\Bank.Api.csproj", "{3548D6AC-EE27-427F-B451-E47EA9590862}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bank.Web", "Bank.Web\Bank.Web.csproj", "{D7819333-2070-41E8-A83B-5A8119B295CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bank.AppLogic.Test", "Bank.AppLogic.Test\Bank.AppLogic.Test.csproj", "{E9EF7129-387C-4E55-9012-053F88683FFA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{D7819333-2070-41E8-A83B-5A8119B295CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7819333-2070-41E8-A83B-5A8119B295CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7819333-2070-41E8-A83B-5A8119B295CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9EF7129-387C-4E55-9012-053F88683FFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9EF7129-387C-4E55-9012-053F88683FFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9EF7129-387C-4E55-9012-053F88683FFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9EF7129-387C-4E55-9012-053F88683FFA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
