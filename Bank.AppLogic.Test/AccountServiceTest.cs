@@ -86,5 +86,70 @@ namespace Bank.AppLogic.Test
             //assert
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod]
+        public void AccountService_CreateAccount_Success()
+        {
+            //arrange
+            Account expected = null;
+            _mockDatabase.Setup(x => x.Query<int>(It.IsAny<string>(), It.IsAny<object>())).Returns(1);
+            _mockDatabase.Setup(x => x.Query<Account>(It.IsAny<string>(), It.IsAny<object>())).Returns(expected);
+
+            //act
+            var service = new AccountService(_mockDatabase.Object);
+            var actual = service.Create(new Account { AccountNumber = "ACCT05", AccountName = "Account 5", Password = "password1", Balance = 0 });
+
+            //assert
+            Assert.AreEqual(true, actual.IsSuccess);
+        }
+
+        [TestMethod]
+        public void AccountService_CreateAccount_Fail_Duplicate_AccountNumber()
+        {
+            //arrange
+            var existingAcct = new Account
+            {
+                Id = 1,
+                AccountName = "test account",
+                Balance = 100m,
+                AccountNumber = "ACCT01",
+                Password = "Pass1",
+                LastTransactionDate = DateTime.Now
+            };
+            _mockDatabase.Setup(x => x.Query<int>(It.IsAny<string>(), It.IsAny<object>())).Returns(1);
+            _mockDatabase.Setup(x => x.Query<Account>("SELECT * FROM Accounts WHERE AccountNumber = @AccountNumber", It.IsAny<object>())).Returns(existingAcct);
+
+            //act
+            var service = new AccountService(_mockDatabase.Object);
+            var actual = service.Create(new Account { AccountNumber = "ACCT01", AccountName = "abc", Password = "password1", Balance = 0 });
+
+            //assert
+            Assert.AreEqual(ErrorCodes.ERR_ACCOUNT_DUPLICATE_ACCT_NUMBER, actual.ErrorCode);
+        }
+
+        [TestMethod]
+        public void AccountService_CreateAccount_Fail_Duplicate_AccountName()
+        {
+            //arrange
+            var existingAcct = new Account
+            {
+                Id = 1,
+                AccountName = "test account",
+                Balance = 100m,
+                AccountNumber = "ACCT01",
+                Password = "Pass1",
+                LastTransactionDate = DateTime.Now
+            };
+            _mockDatabase.Setup(x => x.Query<int>(It.IsAny<string>(), It.IsAny<object>())).Returns(1);
+            _mockDatabase.Setup(x => x.Query<Account>("SELECT * FROM Accounts WHERE AccountNumber = @AccountNumber", It.IsAny<object>())).Returns((Account)null);
+            _mockDatabase.Setup(x => x.Query<Account>("SELECT * FROM Accounts WHERE AccountName = @AccountName", It.IsAny<object>())).Returns(existingAcct);
+
+            //act
+            var service = new AccountService(_mockDatabase.Object);
+            var actual = service.Create(new Account { AccountNumber = "ACCT06", AccountName = "test account", Password = "password1", Balance = 0 });
+
+            //assert
+            Assert.AreEqual(ErrorCodes.ERR_ACCOUNT_DUPLICATE_ACCT_NAME, actual.ErrorCode);
+        }
     }
 }

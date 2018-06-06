@@ -42,7 +42,7 @@ namespace Bank.Api.Controllers
         }
 
         [HttpPost]
-        public int Create([FromBody]Account account)
+        public TransactionResponse Create([FromBody]Account account)
         {
             return _accountService.Create(account);
         }

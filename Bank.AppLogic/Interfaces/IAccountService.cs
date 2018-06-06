@@ -11,6 +11,6 @@ namespace Bank.AppLogic.Interfaces
         Account GetBy(string accountNumber);
         Account GetBy(string accountNumber, string password);
         IEnumerable<Account> Get();
-        int Create(Account account);
+        TransactionResponse Create(Account account);
     }
 }

@@ -8,9 +8,13 @@
 
 <h4>AccountViewModel</h4>
 <hr />
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <span class="alert-danger">@Model.ErrorMessage</span>
+}
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="SaveRegistration" method="post">
+        <form asp-action="Register" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="AccountNumber" class="control-label"></label>

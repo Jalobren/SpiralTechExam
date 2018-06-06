@@ -22,6 +22,12 @@ namespace Bank.Web.Utils
                 case ErrorCodes.ERR_CONCURRENT:
                     message = "Recent transactions has been made, your current balance is updated. Please try again.";
                     break;
+                case ErrorCodes.ERR_ACCOUNT_DUPLICATE_ACCT_NUMBER:
+                    message = "Account Number already exists.";
+                    break;
+                case ErrorCodes.ERR_ACCOUNT_DUPLICATE_ACCT_NAME:
+                    message = "Account Name already exists.";
+                    break;
                 default:
                     message = "Unknown error occured.";
                     break;

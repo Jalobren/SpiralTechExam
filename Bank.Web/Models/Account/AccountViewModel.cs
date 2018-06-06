@@ -15,5 +15,7 @@ namespace Bank.Web.Models.Account
         [Required]
         public string Password { get; set; }
         public decimal Balance { get; set; }
+
+        public string ErrorMessage { get; set; }
     }
 }

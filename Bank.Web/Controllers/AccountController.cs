@@ -28,14 +28,19 @@ namespace Bank.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SaveRegistration(AccountModel accountModel)
+        public async Task<IActionResult> Register(AccountModel accountModel)
         {
-            var result = await _httpClient.PostAsync<int>("api/Account",
+            var result = await _httpClient.PostAsync<TransactionResponse>("api/Account",
                     new Account { AccountName = accountModel.AccountName,
                         AccountNumber = accountModel.AccountNumber,
                         Password = accountModel.Password,
                         Balance = accountModel.Balance
                     });
+            if (!result.IsSuccess)
+            {
+                accountModel.ErrorMessage = ErrorMessageResolver.GetErrorMessage(result.ErrorCode);
+                return View(accountModel);
+            }
             return RedirectToAction("Detail", new { id = result });
         }
 
