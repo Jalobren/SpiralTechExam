@@ -20,13 +20,16 @@ namespace Bank.Web.Utils
                     message = "Sorry, your account has insufficient funds.";
                     break;
                 case ErrorCodes.ERR_CONCURRENT:
-                    message = "Recent transactions has been made, your current balance is updated. Please try again.";
+                    message = "There are transactions still being processed. Please try again.";
                     break;
                 case ErrorCodes.ERR_ACCOUNT_DUPLICATE_ACCT_NUMBER:
                     message = "Account Number already exists.";
                     break;
                 case ErrorCodes.ERR_ACCOUNT_DUPLICATE_ACCT_NAME:
                     message = "Account Name already exists.";
+                    break;
+                case ErrorCodes.ERR_UNKOWN:
+                    message = "Unknown error occured.";
                     break;
                 default:
                     message = "Unknown error occured.";

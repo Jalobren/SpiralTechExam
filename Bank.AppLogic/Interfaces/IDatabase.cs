@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Bank.Domain;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using System.Transactions;
 
 namespace Bank.AppLogic.Interfaces
 {
@@ -9,6 +11,8 @@ namespace Bank.AppLogic.Interfaces
     {
         T Query<T>(string sql, object parameters = null);
         IEnumerable<T> QueryList<T>(string sql, object parameters = null);
-        int Execute(string sql, object parameters = null, IDbTransaction transaction = null);
+        TransactionResponse Execute(string sql, object parameters = null);
+        TransactionScope GetTransaction(int? timeoutInSec = null, TransactionScopeOption transactionScopeOption = TransactionScopeOption.Required,
+                                            System.Transactions.IsolationLevel isolationLevel = System.Transactions.IsolationLevel.ReadCommitted);
     }
 }

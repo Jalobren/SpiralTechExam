@@ -4,6 +4,7 @@ using Bank.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Transactions;
 
 namespace Bank.AppLogic
 {
@@ -19,18 +20,31 @@ namespace Bank.AppLogic
 
         public TransactionResponse Deposit(Deposit deposit, string transactionInfo = null)
         {
-            var acct = _accountService.Get(deposit.AccountId);
-            var response = ValidateConcurrentRequest(deposit, acct.LastTransactionDate);
-            if (response.IsSuccess)
+            var response = new TransactionResponse();
+            try
             {
-                var newBalance = acct.Balance + deposit.Amount;
+                using (var transaction = _database.GetTransaction(2))
+                {
+                    var acct = _accountService.Get(deposit.AccountId);
 
-                var query = @"UPDATE Accounts 
-                            SET Balance = @Balance,
-                                LastTransactionDate = GETUTCDATE()
-                            WHERE Id = @AccountId";
+                    var newBalance = acct.Balance + deposit.Amount;
 
-                ExecuteWithTransactionHistory(deposit, query, acct.AccountNumber, newBalance, transactionInfo);
+                    var query = @"UPDATE Accounts 
+                        SET Balance = @Balance,
+                            LastTransactionDate = GETUTCDATE()
+                        WHERE Id = @AccountId";
+
+                    response = ExecuteWithTransactionHistory(deposit, query, acct.AccountNumber, newBalance, transactionInfo);
+                    transaction.Complete();
+                }
+            }
+            catch (TransactionException ex)
+            {
+                response.ErrorCode = ErrorCodes.ERR_CONCURRENT;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorCode = ErrorCodes.ERR_UNKOWN;
             }
             
             return response;
@@ -38,35 +52,38 @@ namespace Bank.AppLogic
 
         public TransactionResponse Withdraw(Withdrawal withdrawal, string transactionInfo = null)
         {
-            var acct = _accountService.Get(withdrawal.AccountId);
-            var response = ValidateConcurrentRequest(withdrawal, acct.LastTransactionDate);
-
-            if (response.IsSuccess)
+            var response = new TransactionResponse();
+            try
             {
-                response = ValidateWithdrawalAmount(acct.Balance, withdrawal.Amount);
-
-                if (response.IsSuccess)
+                using (var transaction = _database.GetTransaction(2))
                 {
-                    var newBalance = acct.Balance - withdrawal.Amount;
+                    var acct = _accountService.Get(withdrawal.AccountId);
 
-                    var query = @"UPDATE Accounts 
-                            SET Balance = @Balance,
-                                LastTransactionDate = GETUTCDATE()
-                            WHERE Id = @AccountId";
+                    response = ValidateWithdrawalAmount(acct.Balance, withdrawal.Amount);
 
-                    ExecuteWithTransactionHistory(withdrawal, query, acct.AccountNumber, newBalance, transactionInfo);
+                    if (response.IsSuccess)
+                    {
+                        var newBalance = acct.Balance - withdrawal.Amount;
+
+                        var query = @"UPDATE Accounts 
+                        SET Balance = @Balance,
+                            LastTransactionDate = GETUTCDATE()
+                        WHERE Id = @AccountId";
+
+                        response = ExecuteWithTransactionHistory(withdrawal, query, acct.AccountNumber, newBalance, transactionInfo);
+                        transaction.Complete();
+                    }
                 }
             }
-            return response;
-        }
-
-        public TransactionResponse ValidateConcurrentRequest(ITransaction transaction, DateTime lastTransactionDate)
-        {
-            if (lastTransactionDate.Subtract(transaction.LastTransactionDate).TotalSeconds >= 1)
+            catch (TransactionException ex)
             {
-                return new TransactionResponse { ErrorCode = ErrorCodes.ERR_CONCURRENT };
+                response.ErrorCode = ErrorCodes.ERR_CONCURRENT;
             }
-            return new TransactionResponse { IsSuccess = true };
+            catch (Exception ex)
+            {
+                response.ErrorCode = ErrorCodes.ERR_UNKOWN;
+            }
+            return response;
         }
 
         public TransactionResponse ValidateWithdrawalAmount(decimal currentBalance, decimal amount)
@@ -80,17 +97,35 @@ namespace Bank.AppLogic
 
         public TransactionResponse Transfer(TransferFunds transfer)
         {
-            var transferToAcct = _accountService.GetBy(transfer.TransferToAccountNumber);
-            var acct = _accountService.Get(transfer.AccountId);
             var response = new TransactionResponse();
-            if (transferToAcct != null)
+            try
             {
-                response = Withdraw(new Withdrawal { AccountId = transfer.AccountId, Amount = transfer.Amount, LastTransactionDate = transfer.LastTransactionDate, TransactionType = TransactionTypes.Transfer, }, $"Fund transfer to Account Name: {transferToAcct.AccountName} Account Number: {transfer.TransferToAccountNumber}");
-                if (response.IsSuccess)
+                using (var transaction = _database.GetTransaction(3))
                 {
-                    var updateAcct = _accountService.GetBy(transfer.TransferToAccountNumber);
-                    response = Deposit(new Domain.Deposit { AccountId = transferToAcct.Id, Amount = transfer.Amount, LastTransactionDate = updateAcct.LastTransactionDate, TransactionType = TransactionTypes.Transfer }, $"Fund transfer from Account Name: {acct.AccountName}");
+                    var transferToAcct = _accountService.GetBy(transfer.TransferToAccountNumber);
+                    var acct = _accountService.Get(transfer.AccountId);
+                    
+                    if (transferToAcct != null)
+                    {
+                        response = Withdraw(new Withdrawal { AccountId = transfer.AccountId, Amount = transfer.Amount, LastTransactionDate = transfer.LastTransactionDate, TransactionType = TransactionTypes.Transfer, }, $"Fund transfer to Account Name: {transferToAcct.AccountName} Account Number: {transfer.TransferToAccountNumber}");
+                        if (response.IsSuccess)
+                        {
+                            response = Deposit(new Domain.Deposit { AccountId = transferToAcct.Id, Amount = transfer.Amount, LastTransactionDate = transfer.LastTransactionDate, TransactionType = TransactionTypes.Transfer }, $"Fund transfer from Account Name: {acct.AccountName}");
+                            if (response.IsSuccess)
+                            {
+                                transaction.Complete();
+                            }
+                        }
+                    }
                 }
+            }
+            catch (TransactionException ex)
+            {
+                response.ErrorCode = ErrorCodes.ERR_CONCURRENT;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorCode = ErrorCodes.ERR_UNKOWN;
             }
 
             return response;
@@ -101,7 +136,7 @@ namespace Bank.AppLogic
             return _database.QueryList<TransactionHistory>("SELECT * FROM TransactionHistory WHERE AccountId = @AccountId", new { AccountId = accountId });
         }
 
-        private int ExecuteWithTransactionHistory(ITransaction transaction, string sqltransaction, string accountNumber, decimal newBalance, string transactionInfo = null)
+        private TransactionResponse ExecuteWithTransactionHistory(ITransaction transaction, string sqltransaction, string accountNumber, decimal newBalance, string transactionInfo = null)
         {
             var transactionTypeString = transaction.TransactionType.ToString();
             var transHistory = $"INSERT INTO TransactionHistory (AccountId, AccountNumber, TransactionType, TransactionInfo, TransactionAmount, CurrentBalance) " +
@@ -111,7 +146,15 @@ namespace Bank.AppLogic
             query.Append(sqltransaction).AppendLine();
             query.Append(transHistory);
 
-            return _database.Execute(query.ToString(), new { AccountId = transaction.AccountId, AccountNumber = accountNumber, TransactionType = transactionTypeString, TransactionInfo = transactionInfo, TransactionAmount = transaction.Amount, Balance = newBalance });
+            _database.Execute(query.ToString(), 
+                                new { AccountId = transaction.AccountId,
+                                        AccountNumber = accountNumber,
+                                        TransactionType = transactionTypeString,
+                                        TransactionInfo = transactionInfo,
+                                        TransactionAmount = transaction.Amount,
+                                        Balance = newBalance });
+
+            return new TransactionResponse { IsSuccess = true };
         }
     }
 }

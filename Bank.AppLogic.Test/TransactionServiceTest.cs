@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using System.Transactions;
 
 namespace Bank.AppLogic.Test
 {
@@ -38,8 +39,8 @@ namespace Bank.AppLogic.Test
                 Password = "testPassword",
                 LastTransactionDate = DateTime.Now
             };
-
-            _mockDatabase.Setup(x => x.Execute(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>())).Returns(1);
+            
+            _mockDatabase.Setup(x => x.Execute(It.IsAny<string>(), It.IsAny<object>())).Returns(new TransactionResponse { IsSuccess = true });
             _mockAccountService.Setup(x => x.Get(It.IsAny<int>())).Returns(account);
 
             //act
@@ -66,9 +67,9 @@ namespace Bank.AppLogic.Test
                 Password = "testPassword",
                 LastTransactionDate = DateTime.Now.AddSeconds(10)
             };
-
-            _mockDatabase.Setup(x => x.Execute(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>())).Returns(1);
-            _mockAccountService.Setup(x => x.Get(It.IsAny<int>())).Returns(account);
+           
+            _mockDatabase.Setup(x => x.Execute(It.IsAny<string>(), It.IsAny<object>())).Returns(new TransactionResponse { IsSuccess = true });
+            _mockAccountService.Setup(x => x.Get(It.IsAny<int>())).Throws(new TransactionException());
 
             //act
             var service = new TransactionService(_mockDatabase.Object, _mockAccountService.Object);
@@ -95,7 +96,7 @@ namespace Bank.AppLogic.Test
                 LastTransactionDate = DateTime.Now
             };
 
-            _mockDatabase.Setup(x => x.Execute(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>())).Returns(1);
+            _mockDatabase.Setup(x => x.Execute(It.IsAny<string>(), It.IsAny<object>())).Returns(new TransactionResponse { IsSuccess = true });
             _mockAccountService.Setup(x => x.Get(It.IsAny<int>())).Returns(account);
 
             //act
@@ -123,8 +124,8 @@ namespace Bank.AppLogic.Test
                 LastTransactionDate = DateTime.Now.AddSeconds(10)
             };
 
-            _mockDatabase.Setup(x => x.Execute(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>())).Returns(1);
-            _mockAccountService.Setup(x => x.Get(It.IsAny<int>())).Returns(account);
+            _mockDatabase.Setup(x => x.Execute(It.IsAny<string>(), It.IsAny<object>())).Returns(new TransactionResponse { IsSuccess = true });
+            _mockAccountService.Setup(x => x.Get(It.IsAny<int>())).Throws(new TransactionException());
 
             //act
             var service = new TransactionService(_mockDatabase.Object, _mockAccountService.Object);
@@ -151,7 +152,7 @@ namespace Bank.AppLogic.Test
                 LastTransactionDate = DateTime.Now
             };
 
-            _mockDatabase.Setup(x => x.Execute(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>())).Returns(1);
+            _mockDatabase.Setup(x => x.Execute(It.IsAny<string>(), It.IsAny<object>())).Returns(new TransactionResponse { IsSuccess = true });
             _mockAccountService.Setup(x => x.Get(It.IsAny<int>())).Returns(account);
 
             //act
@@ -189,7 +190,7 @@ namespace Bank.AppLogic.Test
                 LastTransactionDate = DateTime.Now
             };
 
-            _mockDatabase.Setup(x => x.Execute(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>())).Returns(1);
+            _mockDatabase.Setup(x => x.Execute(It.IsAny<string>(), It.IsAny<object>())).Returns(new TransactionResponse { IsSuccess = true });
             _mockAccountService.Setup(x => x.Get(It.IsAny<int>())).Returns(account);
             _mockAccountService.Setup(x => x.GetBy(It.IsAny<string>())).Returns(transferAcct);
 
@@ -228,9 +229,9 @@ namespace Bank.AppLogic.Test
                 LastTransactionDate = DateTime.Now.AddSeconds(10)
             };
 
-            _mockDatabase.Setup(x => x.Execute(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>())).Returns(1);
+            _mockDatabase.Setup(x => x.Execute(It.IsAny<string>(), It.IsAny<object>())).Returns(new TransactionResponse { IsSuccess = true });
             _mockAccountService.Setup(x => x.Get(It.IsAny<int>())).Returns(account);
-            _mockAccountService.Setup(x => x.GetBy(It.IsAny<string>())).Returns(transferAcct);
+            _mockAccountService.Setup(x => x.GetBy(It.IsAny<string>())).Throws(new TransactionException());
 
             //act
             var service = new TransactionService(_mockDatabase.Object, _mockAccountService.Object);
@@ -266,7 +267,7 @@ namespace Bank.AppLogic.Test
                 LastTransactionDate = DateTime.Now
             };
 
-            _mockDatabase.Setup(x => x.Execute(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>())).Returns(1);
+            _mockDatabase.Setup(x => x.Execute(It.IsAny<string>(), It.IsAny<object>())).Returns(new TransactionResponse { IsSuccess = true });
             _mockAccountService.Setup(x => x.Get(It.IsAny<int>())).Returns(account);
             _mockAccountService.Setup(x => x.GetBy(It.IsAny<string>())).Returns(transferAcct);
 

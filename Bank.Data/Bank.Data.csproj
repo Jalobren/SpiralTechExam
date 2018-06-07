@@ -7,10 +7,12 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Bank.AppLogic\Bank.AppLogic.csproj" />
+    <ProjectReference Include="..\Bank.Domain\Bank.Domain.csproj" />
   </ItemGroup>
 
 </Project>

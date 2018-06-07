@@ -11,5 +11,6 @@ namespace Bank.Domain
         public const string ERR_INSUFFICIENT_FUNDS = "ERR_INSUFFICIENT_FUNDS";
         public const string ERR_ACCOUNT_DUPLICATE_ACCT_NUMBER = "ERR_ACCOUNT_DUPLICATE_ACCT_NUMBER";
         public const string ERR_ACCOUNT_DUPLICATE_ACCT_NAME = "ERR_ACCOUNT_DUPLICATE_ACCT_NAME";
+        public const string ERR_UNKOWN = "ERR_UNKOWN";
     }
 }
