@@ -41,7 +41,7 @@ namespace Bank.Web.Controllers
                 accountModel.ErrorMessage = ErrorMessageResolver.GetErrorMessage(result.ErrorCode);
                 return View(accountModel);
             }
-            return RedirectToAction("Detail", new { id = result });
+            return RedirectToAction("Index","Home");
         }
 
         [HttpGet]
