@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bank.Api", "Bank.Api\Bank.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bank.Web", "Bank.Web\Bank.Web.csproj", "{D7819333-2070-41E8-A83B-5A8119B295CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bank.AppLogic.Test", "Bank.AppLogic.Test\Bank.AppLogic.Test.csproj", "{E9EF7129-387C-4E55-9012-053F88683FFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bank.AppLogic.Test", "Bank.AppLogic.Test\Bank.AppLogic.Test.csproj", "{E9EF7129-387C-4E55-9012-053F88683FFA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankConcurrencyTest", "BankConcurrencyTest\BankConcurrencyTest.csproj", "{68427B58-7D71-4DF7-ADC4-30E91A70CEA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{E9EF7129-387C-4E55-9012-053F88683FFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9EF7129-387C-4E55-9012-053F88683FFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9EF7129-387C-4E55-9012-053F88683FFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68427B58-7D71-4DF7-ADC4-30E91A70CEA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68427B58-7D71-4DF7-ADC4-30E91A70CEA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68427B58-7D71-4DF7-ADC4-30E91A70CEA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68427B58-7D71-4DF7-ADC4-30E91A70CEA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

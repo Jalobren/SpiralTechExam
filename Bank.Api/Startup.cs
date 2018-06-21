@@ -26,9 +26,8 @@ namespace Bank.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IAccountService, AccountService>();
-            services.AddTransient<ITransactionService, TransactionService>();
-            services.AddTransient<IDatabase, Database>();
+            Bank.AppLogic.Intialization.InitIocContainer(services);
+            Bank.Data.Initialization.InitIocContainer(services);
             services.AddMvc();
             services.AddSwaggerGen(c =>
             {
