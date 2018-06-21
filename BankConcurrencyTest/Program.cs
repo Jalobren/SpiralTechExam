@@ -33,17 +33,20 @@ namespace BankConcurrencyTest
             var tran1 = transactiontest.Deposit(getBal1.Id, 30);
             var tran2 = transactiontest.Transfer(getBal1.Id, "ACTTEST123457", 10);
             var tran3 = transactiontest.Deposit(getBal1.Id, 100);
+            var tran4 = transactiontest.Withdraw(getBal1.Id, 50);
 
-            Task.WaitAll(tran1, tran2, tran3);
+            Task.WaitAll(tran1, tran2, tran3, tran4);
 
             var getBal2 = transactiontest.GetAccount("ACTTEST123456");
 
             Console.WriteLine("Initial User ACCT Test1 Balance: " + getBal1.Balance);
-            Console.WriteLine(string.Format("Tran 1 Result: {0}", tran1.Result.IsSuccess ? "Success" : tran1.Result.ErrorCode));
-            Console.WriteLine(string.Format("Tran 2 Result: {0}", tran2.Result.IsSuccess ? "Success" : tran2.Result.ErrorCode));
-            Console.WriteLine(string.Format("Tran 3 Result: {0}", tran3.Result.IsSuccess ? "Success" : tran3.Result.ErrorCode));
+            Console.WriteLine(string.Format("Tran 1 Deposit Result: {0}", tran1.Result.IsSuccess ? "Success" : tran1.Result.ErrorCode));
+            Console.WriteLine(string.Format("Tran 2 Transfer Result: {0}", tran2.Result.IsSuccess ? "Success" : tran2.Result.ErrorCode));
+            Console.WriteLine(string.Format("Tran 3 Deposit Result: {0}", tran3.Result.IsSuccess ? "Success" : tran3.Result.ErrorCode));
+            Console.WriteLine(string.Format("Tran 4 Withdrawal Result: {0}", tran4.Result.IsSuccess ? "Success" : tran4.Result.ErrorCode));
+
             Console.WriteLine("Latest User ACCT Test1 Balance: " + getBal2.Balance);
-            Console.WriteLine(string.Format("Expected User ACCT Test1 Balance: {0}", (getBal1.Balance + 30) - 10 + 100));
+            Console.WriteLine(string.Format("Expected User ACCT Test1 Balance: {0}", (getBal1.Balance + 30) - 10 + 100 - 50));
 
             Console.ReadLine();
         }
@@ -74,6 +77,11 @@ namespace BankConcurrencyTest
         public Task<Bank.Domain.TransactionResponse> Deposit(int accountId, decimal amount)
         {
             return Task.Run(() => _transactionService.Deposit(new Bank.Domain.Deposit { AccountId = accountId, Amount = amount }));
+        }
+
+        public Task<Bank.Domain.TransactionResponse> Withdraw(int accountId, decimal amount)
+        {
+            return Task.Run(() => _transactionService.Withdraw(new Bank.Domain.Withdrawal { AccountId = accountId, Amount = amount }));
         }
 
         public Task<Bank.Domain.TransactionResponse> Transfer(int accountId, string accoutNumber, decimal amount)

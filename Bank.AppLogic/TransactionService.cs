@@ -12,6 +12,7 @@ namespace Bank.AppLogic
     {
         private IDatabase _database;
         private IAccountService _accountService;
+        private object thisLock = new object();
         public TransactionService(IDatabase database, IAccountService accountService)
         {
             _database = database;
@@ -23,19 +24,22 @@ namespace Bank.AppLogic
             var response = new TransactionResponse();
             try
             {
-                using (var transaction = _database.GetTransaction(2))
+                lock (thisLock)
                 {
-                    var acct = _accountService.Get(deposit.AccountId);
+                    using (var transaction = _database.GetTransaction(2))
+                    {
+                        var acct = _accountService.Get(deposit.AccountId);
 
-                    var newBalance = acct.Balance + deposit.Amount;
+                        var newBalance = acct.Balance + deposit.Amount;
 
-                    var query = @"UPDATE Accounts 
+                        var query = @"UPDATE Accounts 
                         SET Balance = @Balance,
                             LastTransactionDate = GETUTCDATE()
                         WHERE Id = @AccountId";
 
-                    response = ExecuteWithTransactionHistory(deposit, query, acct.AccountNumber, newBalance, transactionInfo);
-                    transaction.Complete();
+                        response = ExecuteWithTransactionHistory(deposit, query, acct.AccountNumber, newBalance, transactionInfo);
+                        transaction.Complete();
+                    }
                 }
             }
             catch (TransactionException ex)
@@ -55,23 +59,26 @@ namespace Bank.AppLogic
             var response = new TransactionResponse();
             try
             {
-                using (var transaction = _database.GetTransaction(2))
+                lock (thisLock)
                 {
-                    var acct = _accountService.Get(withdrawal.AccountId);
-
-                    response = ValidateWithdrawalAmount(acct.Balance, withdrawal.Amount);
-
-                    if (response.IsSuccess)
+                    using (var transaction = _database.GetTransaction(2))
                     {
-                        var newBalance = acct.Balance - withdrawal.Amount;
+                        var acct = _accountService.Get(withdrawal.AccountId);
 
-                        var query = @"UPDATE Accounts 
+                        response = ValidateWithdrawalAmount(acct.Balance, withdrawal.Amount);
+
+                        if (response.IsSuccess)
+                        {
+                            var newBalance = acct.Balance - withdrawal.Amount;
+
+                            var query = @"UPDATE Accounts 
                         SET Balance = @Balance,
                             LastTransactionDate = GETUTCDATE()
                         WHERE Id = @AccountId";
 
-                        response = ExecuteWithTransactionHistory(withdrawal, query, acct.AccountNumber, newBalance, transactionInfo);
-                        transaction.Complete();
+                            response = ExecuteWithTransactionHistory(withdrawal, query, acct.AccountNumber, newBalance, transactionInfo);
+                            transaction.Complete();
+                        }
                     }
                 }
             }
@@ -100,20 +107,23 @@ namespace Bank.AppLogic
             var response = new TransactionResponse();
             try
             {
-                using (var transaction = _database.GetTransaction(3))
+                lock (thisLock)
                 {
-                    var transferToAcct = _accountService.GetBy(transfer.TransferToAccountNumber);
-                    var acct = _accountService.Get(transfer.AccountId);
-                    
-                    if (transferToAcct != null)
+                    using (var transaction = _database.GetTransaction(3))
                     {
-                        response = Withdraw(new Withdrawal { AccountId = transfer.AccountId, Amount = transfer.Amount, LastTransactionDate = transfer.LastTransactionDate, TransactionType = TransactionTypes.Transfer, }, $"Fund transfer to Account Name: {transferToAcct.AccountName} Account Number: {transfer.TransferToAccountNumber}");
-                        if (response.IsSuccess)
+                        var transferToAcct = _accountService.GetBy(transfer.TransferToAccountNumber);
+                        var acct = _accountService.Get(transfer.AccountId);
+
+                        if (transferToAcct != null)
                         {
-                            response = Deposit(new Domain.Deposit { AccountId = transferToAcct.Id, Amount = transfer.Amount, LastTransactionDate = transfer.LastTransactionDate, TransactionType = TransactionTypes.Transfer }, $"Fund transfer from Account Name: {acct.AccountName}");
+                            response = Withdraw(new Withdrawal { AccountId = transfer.AccountId, Amount = transfer.Amount, LastTransactionDate = transfer.LastTransactionDate, TransactionType = TransactionTypes.Transfer, }, $"Fund transfer to Account Name: {transferToAcct.AccountName} Account Number: {transfer.TransferToAccountNumber}");
                             if (response.IsSuccess)
                             {
-                                transaction.Complete();
+                                response = Deposit(new Domain.Deposit { AccountId = transferToAcct.Id, Amount = transfer.Amount, LastTransactionDate = transfer.LastTransactionDate, TransactionType = TransactionTypes.Transfer }, $"Fund transfer from Account Name: {acct.AccountName}");
+                                if (response.IsSuccess)
+                                {
+                                    transaction.Complete();
+                                }
                             }
                         }
                     }
